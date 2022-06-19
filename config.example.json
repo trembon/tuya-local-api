@@ -1,0 +1,11 @@
+{
+    "server": {
+        "port": 3000
+    },
+    "devices": [
+        {
+            "id": "xxxxxxxx",
+            "key": "xxxxxxxx"
+        }
+    ]
+}
