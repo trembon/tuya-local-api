@@ -1,6 +1,8 @@
 import TuyAPI from 'tuyapi';
+import Logger from './logger';
+import PublicDevice from './public-device.model';
 
-export default class ActiveDevice{
+export default class ActiveDevice {
 
     tuya: TuyAPI;
 
@@ -11,33 +13,42 @@ export default class ActiveDevice{
         });
     }
 
-    async connect(): Promise<void>{
-        this.tuya.on('connected', this.onConnected);
-        this.tuya.on('disconnected', this.onDisconnected);
-        this.tuya.on('error', this.onError);
-        this.tuya.on('data', this.onData);
+    async connect(): Promise<void> {
+        this.tuya.on('connected', () => this.onConnected());
+        this.tuya.on('disconnected', () => this.onDisconnected());
+        this.tuya.on('error', (error) => this.onError(error));
+        this.tuya.on('data', (data) => this.onData(data));
 
         await this.tuya.find();
         await this.tuya.connect();
     }
 
-    async disconnect() : Promise<void>{
+    async disconnect(): Promise<void> {
         await this.tuya.disconnect();
     }
 
-    private onConnected(): void{
-        console.log('Connected to device!');
+    toPublicDevice() : PublicDevice{
+        return {
+            id: this.tuya.device.id,
+            ip: this.tuya.device.ip,
+            productKey: this.tuya.device.productKey,
+            isConnected: this.tuya.isConnected()
+        }
     }
 
-    private onDisconnected(): void{
-        console.log('Disconnected from device.');
+    private onConnected(): void {
+        Logger.Info(`${this.tuya.device.id} - connected`);
     }
 
-    private onError(error): void{
-        console.log('Error!', error);
+    private onDisconnected(): void {
+        Logger.Info(`${this.tuya.device.id} - disconnected`);
     }
 
-    private onData(data): void{
-        console.log('Data from device:', data);
+    private onError(error): void {
+        Logger.Error(`${this.tuya.device.id} - error`, error);
+    }
+
+    private onData(data): void {
+        Logger.Debug(`${this.tuya.device.id} - data`, data)
     }
 }
