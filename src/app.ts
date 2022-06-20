@@ -29,6 +29,30 @@ app.get('/devices', (req, res) => {
     res.json(response);
 });
 
+app.get('/devices/:deviceId/send/:command', (req, res) => {
+    const device = devices[req.params.deviceId];
+    if (!device) {
+        res.sendStatus(404);
+        return;
+    }
+
+    switch (req.params.command.toLowerCase()) {
+        case 'turnon':
+            device.set({ set: true });
+            break;
+
+        case 'turnoff':
+            device.set({ set: false });
+            break;
+
+        default:
+            res.sendStatus(404);
+            return;
+    }
+
+    res.sendStatus(200);
+});
+
 app.listen(port, () => {
     return Logger.Info(`Express is listening on port ${port}`);
 });

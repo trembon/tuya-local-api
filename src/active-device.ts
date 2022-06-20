@@ -27,7 +27,11 @@ export default class ActiveDevice {
         await this.tuya.disconnect();
     }
 
-    toPublicDevice() : PublicDevice{
+    async set(data: any): Promise<void> {
+        await this.tuya.set(data);
+    }
+
+    toPublicDevice(): PublicDevice {
         return {
             id: this.tuya.device.id,
             ip: this.tuya.device.ip,

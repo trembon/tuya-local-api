@@ -11,11 +11,11 @@ export default class Logger {
         this.Output('ERROR', text, data);
     }
 
-    private static Output(type: string, text: string, data?: any){
+    private static Output(type: string, text: string, data?: any) {
         const outputText = `${new Date().toUTCString()} - ${type} - ${text}`;
-        if(data){
+        if (data) {
             console.log(outputText, data);
-        }else{
+        } else {
             console.log(outputText);
         }
     }
