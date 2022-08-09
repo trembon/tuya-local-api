@@ -2,6 +2,7 @@ import TuyAPI from 'tuyapi';
 import Configuration from './configuration';
 import Logger from './logger';
 import PublicDevice from './public-device.model';
+import { TuyaSetPropertiesMultiple, TuyaSetPropertiesSingle } from './tuya.interface';
 
 export default class ActiveDevice {
 
@@ -41,7 +42,7 @@ export default class ActiveDevice {
         await this.tuya.disconnect();
     }
 
-    async set(data: any): Promise<void> {
+    async set(data: TuyaSetPropertiesMultiple | TuyaSetPropertiesSingle): Promise<void> {
         await this.tuya.set(data);
     }
 

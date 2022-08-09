@@ -3,10 +3,13 @@ import ActiveDevice from './active-device';
 import Configuration from './configuration';
 import Logger from './logger';
 import PublicDevice from './public-device.model';
+import { TuyaSetPropertiesMultiple, TuyaSetPropertiesSingle } from './tuya.interface';
 
 Logger.Info(`Starting`);
 
 const app = express();
+app.use(express.json());
+
 const port = Configuration.Server().port ?? 3000;
 
 let devices: { [id: string]: ActiveDevice } = {};
@@ -27,28 +30,42 @@ app.get('/devices', (req, res) => {
     res.json(response);
 });
 
-app.get('/devices/:deviceId/send/:command', (req, res) => {
+app.post('/devices/:deviceId/send', (req, res) => {
     const device = devices[req.params.deviceId];
     if (!device) {
         res.sendStatus(404);
         return;
     }
 
-    switch (req.params.command.toLowerCase()) {
-        case 'turnon':
-            device.set({ set: true });
-            break;
-
-        case 'turnoff':
-            device.set({ set: false });
-            break;
-
-        default:
-            res.sendStatus(404);
-            return;
+    let action = req.body;
+    console.log('BODY:', action);
+    if(!action){
+        res.sendStatus(400);
+        return;
     }
 
-    res.sendStatus(200);
+    if(action.hasOwnProperty('dps') && action.hasOwnProperty('set')){
+        for (var key in action) {
+            if (action.hasOwnProperty(key) && !(key === 'dps' || key === 'set')) {
+                delete action[key];
+            }
+        }
+
+        device.set(<TuyaSetPropertiesSingle>action);
+        res.sendStatus(200);
+    }else if(action.hasOwnProperty('data')){
+        for (var key in action) {
+            if (action.hasOwnProperty(key) && key !== 'data') {
+                delete action[key];
+            }
+        }
+
+        action.multiple = true;
+        device.set(<TuyaSetPropertiesMultiple>action);
+        res.sendStatus(200);
+    }else{
+        res.sendStatus(400);
+    }
 });
 
 app.listen(port, () => {
