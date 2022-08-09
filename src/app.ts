@@ -1,18 +1,16 @@
 import express from 'express';
 import ActiveDevice from './active-device';
-import { Config } from './config.interface';
+import Configuration from './configuration';
 import Logger from './logger';
 import PublicDevice from './public-device.model';
-
-const config: Config = require("../config.json");
 
 Logger.Info(`Starting`);
 
 const app = express();
-const port = config.server.port ?? 3000;
+const port = Configuration.Server().port ?? 3000;
 
 let devices: { [id: string]: ActiveDevice } = {};
-config.devices.forEach(d => {
+Configuration.Devices().forEach(d => {
     devices[d.id] = new ActiveDevice(d.id, d.key);
     devices[d.id].connect();
 });

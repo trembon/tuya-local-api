@@ -5,6 +5,7 @@ export interface Config{
 
 export interface ConfigServer {
     port: number;
+    deviceReconnectWait: number;
 }
 
 export interface ConfigDevice{

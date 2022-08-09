@@ -1,4 +1,5 @@
 import TuyAPI from 'tuyapi';
+import Configuration from './configuration';
 import Logger from './logger';
 import PublicDevice from './public-device.model';
 
@@ -11,16 +12,29 @@ export default class ActiveDevice {
             id: id,
             key: key
         });
-    }
 
-    async connect(): Promise<void> {
         this.tuya.on('connected', () => this.onConnected());
         this.tuya.on('disconnected', () => this.onDisconnected());
         this.tuya.on('error', (error) => this.onError(error));
         this.tuya.on('data', (data) => this.onData(data));
+    }
 
-        await this.tuya.find();
-        await this.tuya.connect();
+    async connect(): Promise<void> {
+        try {
+            await this.tuya.find();
+            await this.tuya.connect();
+        } catch (ex: unknown) {
+            Logger.Error(`${this.tuya.device.id} - Error connecting to device: ${(<Error>ex).message}`);
+            this.reconnect();
+        }
+    }
+
+    private reconnect(): void{
+        let _this = this;
+        setTimeout(() => {
+            Logger.Info(`${_this.tuya.device.id} - trying to reconnect`);
+            _this.connect();
+        }, Configuration.Server().deviceReconnectWait);
     }
 
     async disconnect(): Promise<void> {
@@ -46,6 +60,7 @@ export default class ActiveDevice {
 
     private onDisconnected(): void {
         Logger.Info(`${this.tuya.device.id} - disconnected`);
+        this.reconnect();
     }
 
     private onError(error): void {
