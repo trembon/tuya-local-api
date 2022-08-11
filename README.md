@@ -76,4 +76,4 @@ Basic example of the configuration (config.json) file.
 
 ## Getting device id/key
 
-Use [TuyaCLI](https://github.com/TuyaAPI/cli) and if help is needed this [guide](https://github.com/codetheweb/tuyapi/blob/8c2fe71cfc3aa22024b67472bbfd95467a5a28b1/docs/SETUP.md) can be helpful.
+Use [TuyaCLI](https://github.com/TuyaAPI/cli) and if help is needed this [guide](https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md) can be helpful.
