@@ -1,6 +1,7 @@
 # tuya-local-api
 
-Built to be used as a web api wrapper against the [TuyAPI](https://github.com/codetheweb/tuyapi) package.
+Built to be used as a web api wrapper against the [TuyAPI](https://github.com/codetheweb/tuyapi) package, to work with Tuya devices offline and without their servers.
+
 This wrapper will automatically try to keep a connection open to the configured devices by reconnecting to them when they get offline or if the device is offline during startup.
 
 ## Methods
