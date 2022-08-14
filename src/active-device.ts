@@ -11,7 +11,8 @@ export default class ActiveDevice {
     constructor(id: string, key: string) {
         this.tuya = new TuyAPI({
             id: id,
-            key: key
+            key: key,
+            issueGetOnConnect: false
         });
 
         this.tuya.on('connected', () => this.onConnected());
@@ -69,6 +70,9 @@ export default class ActiveDevice {
     }
 
     private onData(data): void {
-        Logger.Debug(`${this.tuya.device.id} - data`, data)
+        Logger.Debug(`${this.tuya.device.id} - data`, data);
+        if(data.hasOwnProperty('dps')){
+            // trigger webhook
+        }
     }
 }
