@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/app.js",
+  "type": "module",
   "scripts": {
     "start": "tsc && node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
+    "node-fetch": "^3.2.10",
     "tuyapi": "github:codetheweb/tuyapi"
   },
   "devDependencies": {

@@ -1,9 +1,9 @@
 import express from 'express';
-import ActiveDevice from './active-device';
-import Configuration from './configuration';
-import Logger from './logger';
-import PublicDevice from './public-device.model';
-import { TuyaSetPropertiesMultiple, TuyaSetPropertiesSingle } from './tuya.interface';
+import ActiveDevice from './active-device.js';
+import Configuration from './configuration.js';
+import Logger from './logger.js';
+import PublicDevice from './public-device.model.js';
+import { TuyaSetPropertiesMultiple, TuyaSetPropertiesSingle } from './tuya.interface.js';
 
 Logger.Info(`Starting`);
 
@@ -19,7 +19,15 @@ Configuration.Devices().forEach(d => {
 });
 
 app.get('/', (req, res) => {
-    res.json('Hello from TuyaLocalApi!');
+    res.json([
+        {
+            'url': '/devices',
+            'info': 'List all devices'
+        }, {
+            'url': '/devices/:deviceId/send',
+            'info': 'Send a command to the specified device. Ex id: 02345000a12b123b12cd'
+        },
+    ]);
 });
 
 app.get('/devices', (req, res) => {
@@ -39,12 +47,12 @@ app.post('/devices/:deviceId/send', (req, res) => {
 
     let action = req.body;
     console.log('BODY:', action);
-    if(!action){
+    if (!action) {
         res.sendStatus(400);
         return;
     }
 
-    if(action.hasOwnProperty('dps') && action.hasOwnProperty('set')){
+    if (action.hasOwnProperty('dps') && action.hasOwnProperty('set')) {
         for (var key in action) {
             if (action.hasOwnProperty(key) && !(key === 'dps' || key === 'set')) {
                 delete action[key];
@@ -53,7 +61,7 @@ app.post('/devices/:deviceId/send', (req, res) => {
 
         device.set(<TuyaSetPropertiesSingle>action);
         res.sendStatus(200);
-    }else if(action.hasOwnProperty('data')){
+    } else if (action.hasOwnProperty('data')) {
         for (var key in action) {
             if (action.hasOwnProperty(key) && key !== 'data') {
                 delete action[key];
@@ -63,7 +71,7 @@ app.post('/devices/:deviceId/send', (req, res) => {
         action.multiple = true;
         device.set(<TuyaSetPropertiesMultiple>action);
         res.sendStatus(200);
-    }else{
+    } else {
         res.sendStatus(400);
     }
 });

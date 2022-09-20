@@ -1,5 +1,5 @@
-import { Config, ConfigDevice, ConfigServer } from './config.interface';
-const config: Config = require("../config.json");
+import { Config, ConfigDevice, ConfigServer } from './config.interface.js';
+import config from '../config.js';
 
 export default class Configuration {
     static Server(): ConfigServer {
@@ -8,5 +8,9 @@ export default class Configuration {
 
     static Devices(): ConfigDevice[] {
         return config.devices;
+    }
+
+    static Webbhooks(): string[] {
+        return config.webhooks;
     }
 }

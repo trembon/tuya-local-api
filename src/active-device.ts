@@ -1,8 +1,9 @@
 import TuyAPI from 'tuyapi';
-import Configuration from './configuration';
-import Logger from './logger';
-import PublicDevice from './public-device.model';
-import { TuyaSetPropertiesMultiple, TuyaSetPropertiesSingle } from './tuya.interface';
+import Configuration from './configuration.js';
+import Logger from './logger.js';
+import PublicDevice from './public-device.model.js';
+import sendWebhook from './send-webhook.js';
+import { TuyaSetPropertiesMultiple, TuyaSetPropertiesSingle } from './tuya.interface.js';
 
 export default class ActiveDevice {
 
@@ -72,7 +73,7 @@ export default class ActiveDevice {
     private onData(data): void {
         Logger.Debug(`${this.tuya.device.id} - data`, data);
         if(data.hasOwnProperty('dps')){
-            // trigger webhook
+            sendWebhook(this.tuya.device.id, data.dps);
         }
     }
 }

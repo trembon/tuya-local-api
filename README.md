@@ -25,7 +25,7 @@ Example result:
 
 ### POST /devices/&lt;deviceId&gt;/send
 
-Lists all configured devices.
+Send a command to the specified device.
 Response will be 200 OK if successfull.
 
 Example body:
@@ -60,19 +60,24 @@ Example body:
 
 Basic example of the configuration (config.json) file.
 
-``` json
-{
-    "server": {
-        "port": 3000,
-        "deviceReconnectWait": 5000
-    },
-    "devices": [
-        {
-            "id": "xxxxxxxx",
-            "key": "xxxxxxxx"
-        }
-    ]
-}
+``` javascript
+var config = {};
+
+config.server = {};
+config.devices = [];
+config.webhooks = [];
+
+config.server.port =  3000;
+config.server.deviceReconnectWait = 5000;
+
+config.devices.push({
+    "id": "xxxxxxxx",
+    "key": "xxxxxxxx"
+});
+
+config.webhooks.push("http://localhost:4321/webhook");
+
+export default config;
 ```
 
 ## Getting device id/key

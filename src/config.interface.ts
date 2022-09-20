@@ -1,6 +1,7 @@
 export interface Config{
     server: ConfigServer;
     devices: ConfigDevice[];
+    webhooks: string[];
 }
 
 export interface ConfigServer {
