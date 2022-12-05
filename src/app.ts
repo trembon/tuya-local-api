@@ -22,9 +22,15 @@ app.get('/', (req, res) => {
     res.json([
         {
             'url': '/devices',
+            'method': 'GET',
             'info': 'List all devices'
         }, {
+            'url': '/devices/:deviceId/status',
+            'method': 'GET',
+            'info': 'Get the current status of the device as DPS values. Ex id: 02345000a12b123b12cd'
+        }, {
             'url': '/devices/:deviceId/send',
+            'method': 'POST',
             'info': 'Send a command to the specified device. Ex id: 02345000a12b123b12cd'
         },
     ]);
@@ -49,7 +55,7 @@ app.get('/devices/:deviceId/status', async (req, res) => {
     res.json(status);
 });
 
-app.post('/devices/:deviceId/send', (req, res) => {
+app.post('/devices/:deviceId/send', async (req, res) => {
     const device = devices[req.params.deviceId];
     if (!device) {
         res.sendStatus(404);
@@ -69,8 +75,8 @@ app.post('/devices/:deviceId/send', (req, res) => {
             }
         }
 
-        device.set(<TuyaSetPropertiesSingle>action);
-        res.sendStatus(200);
+        let result = await device.set(<TuyaSetPropertiesSingle>action);
+        res.json(result);
     } else if (action.hasOwnProperty('data')) {
         for (var key in action) {
             if (action.hasOwnProperty(key) && key !== 'data') {
@@ -79,8 +85,8 @@ app.post('/devices/:deviceId/send', (req, res) => {
         }
 
         action.multiple = true;
-        device.set(<TuyaSetPropertiesMultiple>action);
-        res.sendStatus(200);
+        let result = await device.set(<TuyaSetPropertiesMultiple>action);
+        res.json(result);
     } else {
         res.sendStatus(400);
     }

@@ -23,6 +23,24 @@ Example result:
 ]
 ```
 
+### GET /devices/&lt;deviceId&gt;/status
+
+Get the status in DPS values of the specified device.
+
+Example result:
+
+``` json
+{
+    "20": false,
+    "21": "white",
+    "22": 1000,
+    "23": 348,
+    "24": "00df03e803e8",
+    "25": "020e0d0000000000000003e803e8",
+    "26": 0
+}
+```
+
 ### POST /devices/&lt;deviceId&gt;/send
 
 Send a command to the specified device.
@@ -72,7 +90,8 @@ config.server.deviceReconnectWait = 5000;
 
 config.devices.push({
     "id": "xxxxxxxx",
-    "key": "xxxxxxxx"
+    "key": "xxxxxxxx",
+    "apiVersion": 3.3
 });
 
 config.webhooks.push("http://localhost:4321/webhook");
