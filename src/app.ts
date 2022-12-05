@@ -38,6 +38,17 @@ app.get('/devices', (req, res) => {
     res.json(response);
 });
 
+app.get('/devices/:deviceId/status', async (req, res) => {
+    const device = devices[req.params.deviceId];
+    if (!device) {
+        res.sendStatus(404);
+        return;
+    }
+
+    let status = await device.status();
+    res.json(status);
+});
+
 app.post('/devices/:deviceId/send', (req, res) => {
     const device = devices[req.params.deviceId];
     if (!device) {

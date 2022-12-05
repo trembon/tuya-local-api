@@ -49,11 +49,17 @@ export default class ActiveDevice {
         await this.tuya.set(data);
     }
 
+    async status() : Promise<{ [dps: string]: any }>{
+        let data = await this.tuya.get({schema: true});
+        return data.dps;
+    }
+
     toPublicDevice(): PublicDevice {
         return {
             id: this.tuya.device.id,
             ip: this.tuya.device.ip,
             productKey: this.tuya.device.productKey,
+            apiVersion: this.tuya.device.version,
             isConnected: this.tuya.isConnected()
         }
     }
