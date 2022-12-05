@@ -14,7 +14,7 @@ const port = Configuration.Server().port ?? 3000;
 
 let devices: { [id: string]: ActiveDevice } = {};
 Configuration.Devices().forEach(d => {
-    devices[d.id] = new ActiveDevice(d.id, d.key);
+    devices[d.id] = new ActiveDevice(d.id, d.key, d.apiVersion);
     devices[d.id].connect();
 });
 
@@ -46,7 +46,6 @@ app.post('/devices/:deviceId/send', (req, res) => {
     }
 
     let action = req.body;
-    console.log('BODY:', action);
     if (!action) {
         res.sendStatus(400);
         return;

@@ -9,7 +9,8 @@ config.server.deviceReconnectWait = 5000;
 
 config.devices.push({
     "id": "xxxxxxxx",
-    "key": "xxxxxxxx"
+    "key": "xxxxxxxx",
+    "apiVersion": 3.1
 });
 
 config.webhooks.push("http://localhost:4321/webhook");

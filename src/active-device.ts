@@ -9,11 +9,12 @@ export default class ActiveDevice {
 
     tuya: TuyAPI;
 
-    constructor(id: string, key: string) {
+    constructor(id: string, key: string, apiVersion: number) {
         this.tuya = new TuyAPI({
             id: id,
             key: key,
-            issueGetOnConnect: false
+            issueGetOnConnect: false,
+            apiVersion: apiVersion
         });
 
         this.tuya.on('connected', () => this.onConnected());

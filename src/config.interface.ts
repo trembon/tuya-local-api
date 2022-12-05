@@ -12,4 +12,5 @@ export interface ConfigServer {
 export interface ConfigDevice{
     id: string;
     key: string;
+    apiVersion: number;
 }
