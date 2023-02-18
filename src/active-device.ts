@@ -1,87 +1,116 @@
-import TuyAPI from 'tuyapi';
-import Configuration from './configuration.js';
-import Logger from './logger.js';
-import PublicDevice from './public-device.model.js';
-import sendWebhook from './send-webhook.js';
-import { TuyaData, TuyaSetPropertiesMultiple, TuyaSetPropertiesSingle } from './tuya.interface.js';
+import TuyAPI from "tuyapi";
+import Configuration from "./configuration.js";
+import { IConfigDevice } from "./interfaces/config/device.js";
+import Logger from "./logger.js";
+import PublicDevice from "./public-device.model.js";
+import sendWebhook from "./send-webhook.js";
+import {
+  TuyaData,
+  TuyaSetPropertiesMultiple,
+  TuyaSetPropertiesSingle,
+} from "./tuya.interface.js";
 
 export default class ActiveDevice {
+  tuya: TuyAPI;
+  device: IConfigDevice;
 
-    tuya: TuyAPI;
+  constructor(device: IConfigDevice) {
+    this.device = device;
+    this.tuya = new TuyAPI({
+      id: device.id,
+      key: device.key,
+      issueGetOnConnect: false,
+      apiVersion: device.apiVersion,
+    });
 
-    constructor(id: string, key: string, apiVersion: number) {
-        this.tuya = new TuyAPI({
-            id: id,
-            key: key,
-            issueGetOnConnect: false,
-            apiVersion: apiVersion
-        });
+    this.tuya.on("connected", () => this.onConnected());
+    this.tuya.on("disconnected", () => this.onDisconnected());
+    this.tuya.on("error", (error) => this.onError(error));
+    this.tuya.on("data", (data: TuyaData) => this.onData(data));
+  }
 
-        this.tuya.on('connected', () => this.onConnected());
-        this.tuya.on('disconnected', () => this.onDisconnected());
-        this.tuya.on('error', (error) => this.onError(error));
-        this.tuya.on('data', (data: TuyaData) => this.onData(data));
+  async connect(): Promise<void> {
+    if (this.device.disabled) {
+      return;
     }
 
-    async connect(): Promise<void> {
-        try {
-            await this.tuya.find();
-            await this.tuya.connect();
-        } catch (ex: unknown) {
-            Logger.Error(`${this.tuya.device.id} - Error connecting to device: ${(<Error>ex).message}`);
-            this.reconnect();
-        }
+    try {
+      await this.tuya.find();
+      await this.tuya.connect();
+    } catch (ex: unknown) {
+      Logger.Error(
+        `${this.tuya.device.id} - Error connecting to device: ${
+          (<Error>ex).message
+        }`
+      );
+      this.reconnect();
+    }
+  }
+
+  private reconnect(): void {
+    let _this = this;
+    setTimeout(() => {
+      if (_this.device.disabled) {
+        return;
+      }
+
+      Logger.Info(`${_this.tuya.device.id} - trying to reconnect`);
+      _this.connect();
+    }, Configuration.instance.server().deviceReconnectWait);
+  }
+
+  async disconnect(): Promise<void> {
+    await this.tuya.disconnect();
+  }
+
+  async set(
+    data: TuyaSetPropertiesMultiple | TuyaSetPropertiesSingle
+  ): Promise<{ [dps: string]: any }> {
+    if (this.device.disabled) {
+      return;
     }
 
-    private reconnect(): void{
-        let _this = this;
-        setTimeout(() => {
-            Logger.Info(`${_this.tuya.device.id} - trying to reconnect`);
-            _this.connect();
-        }, Configuration.Server().deviceReconnectWait);
+    let response = await this.tuya.set(data);
+    return response ? response.dps : {};
+  }
+
+  async status(): Promise<{ [dps: string]: any }> {
+    if (this.device.disabled) {
+      return {};
     }
 
-    async disconnect(): Promise<void> {
-        await this.tuya.disconnect();
-    }
+    let data = await this.tuya.get({ schema: true });
+    return data.dps;
+  }
 
-    async set(data: TuyaSetPropertiesMultiple | TuyaSetPropertiesSingle): Promise<{ [dps: string]: any }> {
-        let response = await this.tuya.set(data);
-        return response ? response.dps : {};
-    }
+  toPublicDevice(): PublicDevice {
+    return {
+      id: this.tuya.device.id,
+      name: this.device.name,
+      ip: this.tuya.device.ip,
+      productKey: this.tuya.device.productKey,
+      apiVersion: this.tuya.device.version,
+      isConnected: this.tuya.isConnected(),
+    };
+  }
 
-    async status() : Promise<{ [dps: string]: any }>{
-        let data = await this.tuya.get({schema: true});
-        return data.dps;
-    }
+  private onConnected(): void {
+    Logger.Info(`${this.tuya.device.id} - connected`);
+  }
 
-    toPublicDevice(): PublicDevice {
-        return {
-            id: this.tuya.device.id,
-            ip: this.tuya.device.ip,
-            productKey: this.tuya.device.productKey,
-            apiVersion: this.tuya.device.version,
-            isConnected: this.tuya.isConnected()
-        }
-    }
+  private onDisconnected(): void {
+    Logger.Info(`${this.tuya.device.id} - disconnected`);
+    this.reconnect();
+  }
 
-    private onConnected(): void {
-        Logger.Info(`${this.tuya.device.id} - connected`);
-    }
+  private onError(error): void {
+    Logger.Error(`${this.tuya.device.id} - error`, error);
+  }
 
-    private onDisconnected(): void {
-        Logger.Info(`${this.tuya.device.id} - disconnected`);
-        this.reconnect();
+  private onData(data: TuyaData): void {
+    Logger.Debug(`${this.tuya.device.id} - data`, data);
+    if (data.hasOwnProperty("dps")) {
+      sendWebhook(this.tuya.device.id, data.dps);
     }
-
-    private onError(error): void {
-        Logger.Error(`${this.tuya.device.id} - error`, error);
-    }
-
-    private onData(data: TuyaData): void {
-        Logger.Debug(`${this.tuya.device.id} - data`, data);
-        if(data.hasOwnProperty('dps')){
-            sendWebhook(this.tuya.device.id, data.dps);
-        }
-    }
+  }
 }
