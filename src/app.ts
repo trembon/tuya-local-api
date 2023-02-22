@@ -13,9 +13,7 @@ Logger.Info(`Starting`);
 
 let devices: { [id: string]: ActiveDevice } = {};
 
-const config = new Configuration("./config.json", async () =>
-  processDevices(devices)
-);
+const config = new Configuration(async () => processDevices(devices));
 config.initialize();
 
 const app = express();
