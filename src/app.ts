@@ -1,13 +1,13 @@
 import express from "express";
 import ActiveDevice from "./active-device";
 import Configuration from "./configuration";
+import {
+  ITuyaMultipleProperties,
+  ITuyaSingleProperty,
+} from "./interfaces/tuya";
 import Logger from "./logger";
 import processDevices from "./process-devices";
 import PublicDevice from "./public-device.model";
-import {
-  TuyaSetPropertiesMultiple,
-  TuyaSetPropertiesSingle,
-} from "./tuya.interface";
 
 Logger.Info(`Starting`);
 
@@ -82,7 +82,7 @@ app.post("/devices/:deviceId/send", async (req, res) => {
       }
     }
 
-    let result = await device.set(<TuyaSetPropertiesSingle>action);
+    let result = await device.set(<ITuyaSingleProperty>action);
     res.json(result);
   } else if (action.hasOwnProperty("data")) {
     for (var key in action) {
@@ -92,7 +92,7 @@ app.post("/devices/:deviceId/send", async (req, res) => {
     }
 
     action.multiple = true;
-    let result = await device.set(<TuyaSetPropertiesMultiple>action);
+    let result = await device.set(<ITuyaMultipleProperties>action);
     res.json(result);
   } else {
     res.sendStatus(400);

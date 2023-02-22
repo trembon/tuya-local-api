@@ -1,7 +1,5 @@
 import fs from "fs";
-import { IConfig } from "./interfaces/config/root";
-import { IConfigDevice } from "./interfaces/config/device";
-import { IConfigServer } from "./interfaces/config/server";
+import { IConfig, IConfigDevice, IConfigServer } from "./interfaces/config";
 import Logger from "./logger";
 
 export default class Configuration {

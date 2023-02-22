@@ -1,4 +1,4 @@
-export interface IConfigServer {
-    port: number;
-    deviceReconnectWait: number;
+export default interface IConfigServer {
+  port: number;
+  deviceReconnectWait: number;
 }

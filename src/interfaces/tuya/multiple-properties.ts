@@ -1,4 +1,4 @@
-export interface TuyaMultipleProperties{
-    multiple: boolean;
-    data: { [dps: string]: any };
+export default interface ITuyaMultipleProperties {
+  multiple: boolean;
+  data: { [dps: string]: any };
 }

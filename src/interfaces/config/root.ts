@@ -1,7 +1,7 @@
-import { IConfigDevice } from "./device";
-import { IConfigServer } from "./server";
+import IConfigDevice from "./device";
+import IConfigServer from "./server";
 
-export interface IConfig {
+export default interface IConfig {
   server: IConfigServer;
   devices: IConfigDevice[];
   webhooks: string[];

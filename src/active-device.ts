@@ -1,14 +1,14 @@
 import TuyAPI from "tuyapi";
 import Configuration from "./configuration.js";
-import { IConfigDevice } from "./interfaces/config/device.js";
+import { IConfigDevice } from "./interfaces/config";
+import {
+  ITuyaData,
+  ITuyaMultipleProperties,
+  ITuyaSingleProperty,
+} from "./interfaces/tuya";
 import Logger from "./logger.js";
 import PublicDevice from "./public-device.model.js";
 import sendWebhook from "./send-webhook.js";
-import {
-  TuyaData,
-  TuyaSetPropertiesMultiple,
-  TuyaSetPropertiesSingle,
-} from "./tuya.interface.js";
 
 export default class ActiveDevice {
   tuya: TuyAPI;
@@ -26,7 +26,7 @@ export default class ActiveDevice {
     this.tuya.on("connected", () => this.onConnected());
     this.tuya.on("disconnected", () => this.onDisconnected());
     this.tuya.on("error", (error) => this.onError(error));
-    this.tuya.on("data", (data: TuyaData) => this.onData(data));
+    this.tuya.on("data", (data: ITuyaData) => this.onData(data));
   }
 
   async connect(): Promise<void> {
@@ -64,7 +64,7 @@ export default class ActiveDevice {
   }
 
   async set(
-    data: TuyaSetPropertiesMultiple | TuyaSetPropertiesSingle
+    data: ITuyaMultipleProperties | ITuyaSingleProperty
   ): Promise<{ [dps: string]: any }> {
     if (this.device.disabled) {
       return;
@@ -107,7 +107,7 @@ export default class ActiveDevice {
     Logger.Error(`${this.tuya.device.id} - error`, error);
   }
 
-  private onData(data: TuyaData): void {
+  private onData(data: ITuyaData): void {
     Logger.Debug(`${this.tuya.device.id} - data`, data);
     if (data.hasOwnProperty("dps")) {
       sendWebhook(this.tuya.device.id, data.dps);

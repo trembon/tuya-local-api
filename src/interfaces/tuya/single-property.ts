@@ -1,4 +1,4 @@
-export interface TuyaSingleProperty{
-    dps: number;
-    set: any;
+export default interface ITuyaSingleProperty {
+  dps: number;
+  set: any;
 }
