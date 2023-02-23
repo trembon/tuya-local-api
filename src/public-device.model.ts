@@ -5,4 +5,5 @@ export default interface PublicDevice{
     productKey: string;
     apiVersion: number;
     isConnected: boolean;
+    isDisabled: boolean;
 }

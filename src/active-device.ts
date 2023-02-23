@@ -91,6 +91,7 @@ export default class ActiveDevice {
       productKey: this.tuya.device.productKey,
       apiVersion: this.tuya.device.version,
       isConnected: this.tuya.isConnected(),
+      isDisabled: !!this.device.disabled,
     };
   }
 
