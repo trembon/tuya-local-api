@@ -16,9 +16,11 @@ Example result:
 [
     {
         "id": "id of the device",
+        "name": "name of the device",
         "ip": "ip of the device",
         "productKey": "product key for the device",
-        "isConnected": bool // status of the device
+        "isConnected": bool, // status of the device
+        "isDisabled": bool // if the device is disabled from configuration
     }
 ]
 ```
@@ -78,25 +80,24 @@ Example body:
 
 Basic example of the configuration (config.json) file.
 
-``` javascript
-var config = {};
+``` json
+{
+  "server": {
+    "port": 3000,
+    "deviceReconnectWait": 5000
+  },
+  "webhooks": ["http://localhost:4321/webhook"],
+  "devices": [
+    {
+      "id": "xxxxxxxx",
+      "name": "OnlyForDisplay",
+      "key": "xxxxxxxx",
+      "apiVersion": 3.3,
+      "disabled": false
+    }
+  ]
+}
 
-config.server = {};
-config.devices = [];
-config.webhooks = [];
-
-config.server.port =  3000;
-config.server.deviceReconnectWait = 5000;
-
-config.devices.push({
-    "id": "xxxxxxxx",
-    "key": "xxxxxxxx",
-    "apiVersion": 3.3
-});
-
-config.webhooks.push("http://localhost:4321/webhook");
-
-export default config;
 ```
 
 ## Getting device id/key

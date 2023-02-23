@@ -1,0 +1,16 @@
+{
+  "server": {
+    "port": 3000,
+    "deviceReconnectWait": 5000
+  },
+  "webhooks": ["http://localhost:4321/webhook"],
+  "devices": [
+    {
+      "id": "xxxxxxxx",
+      "name": "OnlyForDisplay",
+      "key": "xxxxxxxx",
+      "apiVersion": 3.3,
+      "disabled": false
+    }
+  ]
+}
