@@ -1,5 +1,6 @@
 import TuyAPI from "tuyapi";
 import Configuration from "./configuration.js";
+import { ITuyAPI } from "./customTypings/tuyapi";
 import { IConfigDevice } from "./interfaces/config";
 import {
   ITuyaData,
@@ -11,16 +12,16 @@ import PublicDevice from "./public-device.model.js";
 import sendWebhook from "./send-webhook.js";
 
 export default class ActiveDevice {
-  tuya: TuyAPI;
+  tuya: ITuyAPI;
   device: IConfigDevice;
 
   constructor(device: IConfigDevice) {
     this.device = device;
-    this.tuya = new TuyAPI({
+    this.tuya = <ITuyAPI>new TuyAPI({
       id: device.id,
       key: device.key,
       issueGetOnConnect: false,
-      apiVersion: device.apiVersion,
+      version: device.apiVersion,
     });
 
     this.tuya.on("connected", () => this.onConnected());
@@ -80,7 +81,7 @@ export default class ActiveDevice {
     }
 
     let data = await this.tuya.get({ schema: true });
-    return data.dps;
+    return <any>data; // TODO: verify this with device
   }
 
   toPublicDevice(): PublicDevice {
