@@ -5,6 +5,14 @@ import Logger from "./logger";
 export default class Configuration {
   static instance: Configuration;
   private static configFile = "config.json";
+  private static defaultConfig: IConfig = {
+    server: {
+      port: 3000,
+      deviceReconnectWait: 5000,
+    },
+    webhooks: [],
+    devices: [],
+  };
 
   config: IConfig;
 
@@ -29,15 +37,26 @@ export default class Configuration {
   async initialize(): Promise<void> {
     Configuration.instance = this;
 
-    if (fs.existsSync(Configuration.configFile)) {
-      this.readFile();
-      fs.watch(Configuration.configFile, () => this.handleReload());
-    } else {
+    try {
+      if (!fs.existsSync(Configuration.configFile)) {
+        Logger.Warning(
+          `Unable to find the configuration file '${Configuration.configFile}', creating with default configuration.`
+        );
+        fs.writeFileSync(
+          Configuration.configFile,
+          JSON.stringify(Configuration.defaultConfig, null, 2)
+        );
+      }
+    } catch (ex) {
       Logger.Error(
-        `Unable to find the configuration file '${Configuration.configFile}', exiting`
+        `Error checking or creating configuration file, exiting`,
+        ex
       );
       process.exit(1);
     }
+
+    this.readFile();
+    fs.watch(Configuration.configFile, () => this.handleReload());
   }
 
   private readFile(): void {
