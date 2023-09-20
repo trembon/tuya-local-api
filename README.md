@@ -84,7 +84,8 @@ Basic example of the configuration (config.json) file.
 {
   "server": {
     "port": 3000,
-    "deviceReconnectWait": 5000
+    "deviceReconnectWait": 5000,
+    "refreshTime": 60000
   },
   "webhooks": ["http://localhost:4321/webhook"],
   "devices": [

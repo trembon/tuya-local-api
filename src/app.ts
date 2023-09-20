@@ -8,12 +8,16 @@ import {
 import Logger from "./logger";
 import processDevices from "./process-devices";
 import PublicDevice from "./public-device.model";
+import refreshDevices from "./refresh-devices";
 
 Logger.Info(`Starting`);
 
 let devices: { [id: string]: ActiveDevice } = {};
 
-const config = new Configuration(async () => processDevices(devices));
+const config = new Configuration(async () => {
+  processDevices(devices);
+  refreshDevices(devices);
+});
 config.initialize();
 
 const app = express();
@@ -22,6 +26,7 @@ app.use(express.json());
 const port = config.server().port ?? 3000;
 
 processDevices(devices);
+refreshDevices(devices);
 
 app.get("/", (req, res) => {
   res.json([

@@ -64,6 +64,14 @@ export default class ActiveDevice {
     await this.tuya.disconnect();
   }
 
+  async refresh(): Promise<void> {
+    if(this.device.disabled || !this.tuya.isConnected()){
+      return;
+    }
+
+    await this.tuya.refresh({schema: true});
+  }
+
   async set(
     data: ITuyaMultipleProperties | ITuyaSingleProperty
   ): Promise<{ [dps: string]: any }> {
