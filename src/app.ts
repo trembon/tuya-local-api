@@ -9,6 +9,7 @@ import Logger from "./logger";
 import processDevices from "./process-devices";
 import PublicDevice from "./public-device.model";
 import refreshDevices from "./refresh-devices";
+import queueAction from "./action-queue";
 
 Logger.Info(`Starting`);
 
@@ -87,8 +88,8 @@ app.post("/devices/:deviceId/send", async (req, res) => {
       }
     }
 
-    let result = await device.set(<ITuyaSingleProperty>action);
-    res.json(result);
+    queueAction(device, <ITuyaSingleProperty>action);
+    res.sendStatus(200);
   } else if (action.hasOwnProperty("data")) {
     for (var key in action) {
       if (action.hasOwnProperty(key) && key !== "data") {
@@ -97,8 +98,8 @@ app.post("/devices/:deviceId/send", async (req, res) => {
     }
 
     action.multiple = true;
-    let result = await device.set(<ITuyaMultipleProperties>action);
-    res.json(result);
+    queueAction(device, <ITuyaMultipleProperties>action);
+    res.sendStatus(200);
   } else {
     res.sendStatus(400);
   }

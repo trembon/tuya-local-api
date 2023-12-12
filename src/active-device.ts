@@ -79,6 +79,7 @@ export default class ActiveDevice {
       return;
     }
 
+    Logger.Debug(`${this.tuya.device.id} - sending command`, data);
     let response = await this.tuya.set(data);
     return response ? response.dps : {};
   }

@@ -2,7 +2,8 @@
   "server": {
     "port": 3000,
     "deviceReconnectWait": 5000,
-    "refreshTime": 60000
+    "refreshTime": 60000,
+    "sendCommandDelay": 5000
   },
   "webhooks": ["http://localhost:4321/webhook"],
   "devices": [

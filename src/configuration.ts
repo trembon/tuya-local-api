@@ -9,6 +9,7 @@ export default class Configuration {
     server: {
       port: 3000,
       deviceReconnectWait: 5000,
+      sendCommandDelay: 5000,
     },
     webhooks: [],
     devices: [],
